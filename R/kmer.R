@@ -29,26 +29,18 @@
 #}
 
 kmer_frequency <- function(seq, k) {
-    if (k < 2 || k > 6) {
-        stop("k must be between 2 and 6")
-    }
-
-    # Convert sequence to uppercase and remove non-ACGT characters
-    seq <- toupper(seq)
-    seq <- gsub("[^ACGT]", "", seq)  # Ensure valid characters
+    # Convert to uppercase and remove unwanted characters
+  seq <- toupper(as.character(seq))
+    seq <- gsub("[^ACGT]", "", seq)  # Remove invalid characters
 
     # Get all k-mers from the sequence
     kmers <- substring(seq, 1:(nchar(seq) - k + 1), k:nchar(seq))
 
-    # Generate all possible k-mers of length k
-    bases <- c("A", "C", "G", "T")
-    possible_kmers <- bases
+    # Generate ALL possible k-mers of length k
+    possible_kmers <- unique(outer(c("A", "C", "G", "T"), rep("", k - 1), paste0))
     for (i in 2:k) {
-        possible_kmers <- as.vector(outer(possible_kmers, bases, paste0))
+        possible_kmers <- unique(outer(possible_kmers, c("A", "C", "G", "T"), paste0))
     }
-
-    # Ensure unique k-mers
-    possible_kmers <- unique(possible_kmers)
 
     # Count occurrences of each k-mer
     kmer_counts <- table(factor(kmers, levels = possible_kmers))
@@ -56,7 +48,7 @@ kmer_frequency <- function(seq, k) {
     # Normalize frequencies (percentage)
     kmer_freqs <- (kmer_counts / sum(kmer_counts)) * 100
 
-    # Convert to a data frame
+    # Convert to a data frame with column names
     kmer_df <- data.frame(Kmer = names(kmer_freqs), Frequency = as.numeric(kmer_freqs))
 
     return(kmer_df)
