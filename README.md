@@ -1,10 +1,13 @@
 ##### Nucleotide Feature Generation###############
 The package contains 4 functions ACTG_composition(), frequency(), gc_content() and shannon_entropy().
-# How to use this file?
-open R
+# How to use this file?  
+
+open R  
+
 install.packages("remotes")
 # Install your package from GitHub
-remotes::install_github("LopamudraDey/NucleoFeature")
+remotes::install_github("LopamudraDey/NucleoFeature")   
+
 library(NucleoFeature)
 # Example 
 result <- NucleoFeature::ACTG_composition("AGCTAGCTAGCCTTTT")
