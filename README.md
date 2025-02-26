@@ -18,9 +18,13 @@ nucleotides
 18.75 25.00 18.75 37.50
 
 # Example 2
-frequency()calculates K-mers.
-It takes 2 inputs: sequence and size of K
-result <- NucleoFeature::frequency("AGCTAGCTAGCCTTTT", 2)
+frequency()calculates K-mers.  
+
+It takes 2 inputs: sequence and size of K.
+
+ 
+result <- NucleoFeature::frequency("AGCTAGCTAGCCTTTT", 2)  
+
    Kmer Frequency
 1    AA  0.000000
 2    CA  0.000000
@@ -40,8 +44,14 @@ result <- NucleoFeature::frequency("AGCTAGCTAGCCTTTT", 2)
 16   TT 20.000000
 
 
-# Example 3
-gc_contect() calculates % of G+C in the sequence 
+# Example 3  
+
+gc_content() calculates % of G+C in the sequence   
+
 seq="ACTCTCAGCT"
-gc_content(seq)
+
+ 
+gc_content(seq)  
+output:  
+
 50
