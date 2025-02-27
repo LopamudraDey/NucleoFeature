@@ -48,18 +48,18 @@ ui <- fluidPage(
       verbatimTextOutput("Nucleosome"),
       
       h4("DNA Bending Stiffness"),
-      verbatimTextOutput("DNA Bending Stiffness"),
+      verbatimTextOutput("BendingStiffness"),
       
       h2("Motif-Based Features"),
       
       h4("Transcription Factor Binding Sites"),
-      tableOutput("Transcription Factor Binding Sites"),
+      tableOutput("BindingSites"),
       
       h4("CpG Islands"),
-      verbatimTextOutput("CpG Islands"),
+      verbatimTextOutput("CpGIslands"),
        
-      h4("DNA Conserved Elements"),
-      verbatimTextOutput("DNA Conserved Elements"),
+     # h4("DNA Conserved Elements"),
+     # verbatimTextOutput("DNAConserved"),
       plotOutput("compositionPlot"),
       plotOutput("kmerPlot")
       
@@ -86,22 +86,30 @@ server <- function(input, output) {
     comp_result <- ACTG_composition(seq_input)  # Nucleotide composition
     gc_result <- gc_content(seq_input)  # GC content
     entropy_result <- shannon_entropy(seq_input)  # Sequence entropy
-    kmer_result <- frequency(seq_input, input$kmer)  # k-mer frequencies
+    kmerTable <- kmer_frequency(seq_input, input$kmer)  # k-mer frequencies
     stabilityIndex<-compute_stability(seq_input)
     zDnaProbability<-compute_z_dna_probability(seq_input)
     Meltingtemperature<-compute_tm(seq_input)
     Hydrophobicity<-compute_physicochemical_properties(seq_input)
     Nucleosome<-compute_nucleosome_positioning(seq_input)
+    BendingStiffness<-compute_bending_stiffness(seq_input)
+    BindingSites<-detect_tfbs(seq_input)
+    CpGIslands<-detect_cpg_island(seq_input)
+    #DNAConserved<-detect_conserved_elements(seq_input)
     return(list(
       composition = comp_result,
       gc_content = gc_result,
       entropy = entropy_result,
-      kmer_freq = kmer_result,
+      kmerTable = kmerTable,
       stabilityIndex= stabilityIndex,
       zDnaProbability=zDnaProbability,
       Meltingtemperature= Meltingtemperature,
       Hydrophobicity=Hydrophobicity,
-      Nucleosome=Nucleosome
+      Nucleosome=Nucleosome,
+      BendingStiffness=BendingStiffness,
+      BindingSites=BindingSites,
+      CpGIslands=CpGIslands
+      #DNAConserved=DNAConserved
     ))
   })
   
@@ -136,19 +144,64 @@ server <- function(input, output) {
   output$Nucleosome <- renderPrint({
     analyze_sequence()$Nucleosome
   }) 
-  # Output: K-mer Frequency Table
-  output$kmerTable <- renderTable({
-    kmer_data <- analyze_sequence()$kmer_freq
+  
+  output$BendingStiffness <- renderPrint({
+    analyze_sequence()$BendingStiffness
+  }) 
+  
+  
+  output$BindingSites <- renderTable({
+    binding <- analyze_sequence()$BindingSites  # Extract binding sites data
     
-    if (is.null(kmer_data)) {
-      return(data.frame(Kmer = NA, Frequency = NA))  # Avoid NULL output
+    # Debugging: Print structure
+    print(str(binding))
+    
+    # Check if it's a named numeric vector
+    if (is.null(binding) || length(binding) == 0) {
+      return(data.frame(BindingSite = "No data", Frequency = 0))  
     }
     
-    # Convert named vector to a data frame
-    kmer_df <- data.frame(Kmer = names(kmer_data), Frequency = as.numeric(kmer_data))
+    if (is.numeric(binding) && !is.data.frame(binding)) {
+      binding <- data.frame(BindingSite = names(binding), Frequency = as.numeric(binding))
+    }
     
-    return(kmer_df)  # Return as a data frame for proper table display
+    # Ensure there are no NA values
+    binding[is.na(binding)] <- 0
+    
+    return(binding)  # Return properly formatted data frame
   })
+  
+  
+  
+    
+    output$CpGIslands<- renderPrint({
+      analyze_sequence()$CpGIslands
+  })
+    
+   
+  # Output: K-mer Frequency Table
+    output$kmerTable <- renderTable({
+      kmer_data <- analyze_sequence()$kmerTable  # Extract k-mer frequencies
+      
+      # Debugging: Check structure
+      print(str(analyze_sequence()))
+      print(head(analyze_sequence()$kmerTable))
+      
+      
+      # Handle NULL or incorrectly formatted data
+      if (is.null(kmer_data) || nrow(kmer_data) == 0) {
+        return(data.frame(Kmer = "No data", Frequency = 0))  
+      }
+      
+      # Ensure the data frame has proper column names
+      if (!("Kmer" %in% colnames(kmer_data)) || !("Frequency" %in% colnames(kmer_data))) {
+        return(data.frame(Kmer = "Error", Frequency = "NA"))
+      }
+      
+      return(kmer_data)  # Directly return data frame
+    })
+    
+    
   
   
   # Plot: Nucleotide Composition
@@ -158,39 +211,33 @@ server <- function(input, output) {
             col = "skyblue", main = "Nucleotide Composition")
   })
   
-  output$kmerPlot <- renderPlot({
-    kmer_data <- analyze_sequence()$kmer_freq
+ # output$kmerPlot <- renderPlot({
+ #   kmer_data <- analyze_sequence()$kmer_freq
     
-    # Check if kmer_data is valid
-    if (is.null(kmer_data) || length(kmer_data) == 0) {
-      plot.new()
-      text(0.5, 0.5, "No valid k-mers found!", cex = 1.5, col = "red")
-      return()
-    }
     
     # Ensure k-mer data is structured properly
-    kmer_df <- data.frame(Kmer = names(kmer_data), Frequency = as.numeric(kmer_data))
+ #   kmer_df <- data.frame(Kmer = names(kmer_data), Frequency = as.numeric(kmer_data))
     
     # Handle missing or zero values
-    kmer_df$Frequency[is.na(kmer_df$Frequency)] <- 0
+ #   kmer_df$Frequency[is.na(kmer_df$Frequency)] <- 0
     
     # Prevent empty plot issue
-    if (all(kmer_df$Frequency == 0)) {
-      plot.new()
-      text(0.5, 0.5, "All k-mer frequencies are zero!", cex = 1.5, col = "red")
-      return()
-    }
+    #if (all(kmer_df$Frequency == 0)) {
+  #    plot.new()
+  #    text(0.5, 0.5, "All k-mer frequencies are zero!", cex = 1.5, col = "red")
+  #    return()
+  #  }
     
     # Plot the k-mer frequencies
-    barplot(kmer_df$Frequency, 
-            names.arg = kmer_df$Kmer, 
-            col = "lightgreen", 
-            las = 2,  # Rotate labels for better visibility
-            ylim = c(0, max(kmer_df$Frequency, na.rm = TRUE) + 5),  # Adjust ylim dynamically
-            main = paste(input$kmer, "-mer Frequency"),
-            ylab = "Frequency (%)",
-            xlab = "K-mers")
-  })
+ #   barplot(kmer_df$Frequency, 
+      #      names.arg = kmer_df$Kmer, 
+      #      col = "lightgreen", 
+      #      las = 2,  # Rotate labels for better visibility
+      #      ylim = c(0, max(kmer_df$Frequency, na.rm = TRUE) + 5),  # Adjust ylim dynamically
+      #      main = paste(input$kmer, "-mer Frequency"),
+        #    ylab = "Frequency (%)",
+       #     xlab = "K-mers")
+ # })
   
   
   
