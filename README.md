@@ -5,17 +5,21 @@ The package contains 4 functions ACTG_composition(), frequency(), gc_content() a
 open R  
 
 install.packages("remotes")
-# Install your package from GitHub
+# Install the package from GitHub
 remotes::install_github("LopamudraDey/NucleoFeature")   
 
 library(NucleoFeature)
 # Example 
 result <- NucleoFeature::ACTG_composition("AGCTAGCTAGCCTTTT")
 print(result)
+This will the following output  
 
-nucleotides
-    A     C     G     T 
-18.75 25.00 18.75 37.50
+nucleotides  
+
+    A     C     G     T   
+    
+18.75 25.00 18.75 37.50  
+
 
 # Example 2
 frequency()calculates K-mers.  
