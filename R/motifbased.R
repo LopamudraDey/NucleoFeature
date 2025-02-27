@@ -1,32 +1,33 @@
 detect_tfbs <- function(sequence, motifs = c(
-  "TATAAA",   # TATA box (Core promoter)
-  "CACGTG",   # E-box (Myc binding site)
-  "GATA",     # GATA transcription factors
-  "GGGCGG",   # SP1 transcription factor
-  "TGGGGA",   # NF-kB binding site
-  "TTTAAA",   # Octamer binding site
-  "CCGCCC",   # AP-2 binding site
-  "AGGAGG",   # PU.1 binding site
-  "ATGCAAAT", # PAX6 binding site
-  "CCATGG",   # CCAAT-box (NF-Y binding)
-  "CGCGCG",   # CpG island recognition
-  "AGCT",     # AP-1 binding site
-  "CTCF",     # CTCF insulator binding
-  "GGGACTTTCC", # NFAT binding site
-  "TGAGTCA",  # Jun-Fos (AP-1) binding
-  "AATTAA",   # Polyadenylation signal
-  "GGAGGA",   # ETS family binding
-  "CGTACG",   # Forkhead (FOXO) binding
-  "GAAGGA",   # RUNX binding site
-  "TTAGGG"    # Telomeric repeat (TRF binding)
-)) {
+  "TATAAA", "CACGTG", "GATA", "GGGCGG", "TGGGGA", "TTTAAA", "CCGCCC", "AGGAGG",
+  "ATGCAAAT", "CCATGG", "CGCGCG", "AGCT", "CTCF", "GGGACTTTCC", "TGAGTCA",
+  "AATTAA", "GGAGGA", "CGTACG", "GAAGGA", "TTAGGG","GTCCCCAGGGGA","GTCCCCTGGGGA", "AAACCACAA",
+  "AAACCACAC", # RUNX1 binding variant (R = A, M = C)
+  "AAACCACGA", # RUNX1 binding variant (R = G, M = A)
+  "AAACCACGC"),
+  tf_names = c(
+    "TATA Box", "E-box (Myc)", "GATA Factors", "SP1", "NF-kB", "Octamer", "AP-2",
+    "PU.1", "PAX6", "CCAAT-box (NF-Y)", "CpG Island", "AP-1", "CTCF", "NFAT",
+    "Jun-Fos (AP-1)", "Polyadenylation", "ETS Family", "Forkhead (FOXO)",
+    "RUNX", "Telomeric Repeat (TRF)","Ebf1","Ebf1","RUNX1","RUNX1","RUNX1","RUNX1" ))
+{
   matches <- sapply(motifs, function(motif) {
     length(gregexpr(motif, sequence, ignore.case = TRUE)[[1]]) - 1
   })
-  return(matches)
+
+  # Create a data frame with TF names and frequencies
+  result_df <- data.frame(
+    BindingSite = tf_names,
+    Motif = motifs,
+    Frequency = matches,
+    stringsAsFactors = FALSE
+  )
+
+  return(result_df)
 }
 
-# 2️⃣ Function to identify CpG Islands
+
+# Function to identify CpG Islands
 detect_cpg_island <- function(seq, min_length = 200, gc_threshold = 0.5, oe_threshold = 0.6) {
   seq <- toupper(seq)  # Convert to uppercase to ensure consistency
 
