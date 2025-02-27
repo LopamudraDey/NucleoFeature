@@ -54,9 +54,3 @@ detect_cpg_island <- function(seq, min_length = 200, gc_threshold = 0.5, oe_thre
   }
 }
 
-# 3️⃣ Function to approximate conserved elements using sequence similarity
-detect_conserved_elements <- function(sequence, reference_sequence) {
-  alignment <- pairwiseAlignment(sequence, reference_sequence, type = "global")
-  score <- pid(alignment)  # Percentage identity score
-  return(score)
-}
