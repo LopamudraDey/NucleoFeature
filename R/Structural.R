@@ -1,6 +1,6 @@
-# Function to compute Melting Temperature (Tm)
+# compute Melting Temperature (Tm) function 
 compute_tm <- function(sequence) {
-  sequence <- toupper(sequence)  # Convert to uppercase
+  sequence <- toupper(sequence)  
   counts <- table(strsplit(sequence, "")[[1]])  # Count nucleotides
 
   A <- ifelse("A" %in% names(counts), counts["A"], 0)
@@ -9,20 +9,19 @@ compute_tm <- function(sequence) {
   C <- ifelse("C" %in% names(counts), counts["C"], 0)
   total <- A + T + G + C
 
-  # Wallace Rule (Apply to all sequences)
-  tm_wallace <- 2 * (A + T) + 4 * (G + C)
-
-  # Empirical formula (for longer sequences)
+  # Compute Melting Temperature (Tm) using the empirical formula
   if (total > 0) {
     tm_empirical <- 64.9 + 41 * ((G + C) - 16.4) / total
   } else {
     tm_empirical <- NA
   }
 
-  return(list(Wallace_Tm = tm_wallace, Empirical_Tm = tm_empirical))
+
+  return(list(Tm_Empirical = tm_empirical))
+}
 }
 
-# Function to compute DNA Stability Index
+# compute DNA Stability Index function. Depends on GC content. A high GC content correlates with higher stability.
 compute_stability <- function(sequence) {
   sequence <- toupper(sequence)
   counts <- table(strsplit(sequence, "")[[1]])
@@ -35,7 +34,7 @@ compute_stability <- function(sequence) {
   return(stability_index)
 }
 
-# Function to estimate Z-DNA Probability
+# Function to estimate Z-DNA Probability. I have used 4 Z-dna motifs
 compute_z_dna_probability <- function(sequence) {
   sequence <- toupper(sequence)  # Convert to uppercase
 
