@@ -9,10 +9,13 @@ install.packages("remotes")
 remotes::install_github("LopamudraDey/NucleoFeature")   
 
 library(NucleoFeature)
-# Example 
-result <- NucleoFeature::ACTG_composition("AGCTAGCTAGCCTTTT")
-print(result)
-This will the following output  
+# Example  
+
+result <- NucleoFeature::ACTG_composition("AGCTAGCTAGCCTTTT")  
+
+print(result)  
+
+This will give the following output  
 
 nucleotides  
 
