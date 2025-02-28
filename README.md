@@ -1,5 +1,5 @@
-##### Nucleotide Feature Generation###############
-The package contains 4 functions ACTG_composition(), frequency(), gc_content() and shannon_entropy().
+##### Nucleotide Feature Generation with Shiny
+The package contains sequence-based, motif-based, physicochemical feature functions like ACTG_composition(), kmer_frequency(), gc_content(), compute_physicochemical_properties() etc. 
 # How to use this file?  
 
 open R  
@@ -8,8 +8,13 @@ install.packages("remotes")
 # Install the package from GitHub
 remotes::install_github("LopamudraDey/NucleoFeature")   
 
-library(NucleoFeature)
-# Example  
+library(NucleoFeature)  
+Then use the Nucleotideallfeatureswithshiny.R program  
+A GUI page will open and it will ask for sequence and kmer. Click on the Analyze button. It will display all results.  
+
+Apart from that If you want individual features, please consider these examples.  
+
+# Example 1
 
 result <- NucleoFeature::ACTG_composition("AGCTAGCTAGCCTTTT")  
 
