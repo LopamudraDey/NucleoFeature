@@ -19,7 +19,7 @@ ui <- fluidPage(
       background-color: #44aa19 !important; /* Darker color on hover */
     }
   ")),
-  theme = shinythemes::shinytheme("superhero"),
+  #theme = shinythemes::shinytheme("superhero"),
   titlePanel("Nucleotide Sequence Analysis"),
 
   sidebarLayout(
@@ -61,7 +61,7 @@ ui <- fluidPage(
       verbatimTextOutput("curvature"),
       h4("Helical Twist"),
       verbatimTextOutput("Helicaltwist"),
-      h4("Correaltion Features"),
+      h4("Correlation Features"),
       verbatimTextOutput("correlation"),
       h4("Melting temperature"),
       verbatimTextOutput("Meltingtemperature"),
