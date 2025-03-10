@@ -1,6 +1,6 @@
-# compute Melting Temperature (Tm) function 
+# Function to compute Melting Temperature (Tm)
 compute_tm <- function(sequence) {
-  sequence <- toupper(sequence)  
+  sequence <- toupper(sequence)  # Convert to uppercase
   counts <- table(strsplit(sequence, "")[[1]])  # Count nucleotides
 
   A <- ifelse("A" %in% names(counts), counts["A"], 0)
@@ -19,9 +19,10 @@ compute_tm <- function(sequence) {
 
   return(list(Tm_Empirical = tm_empirical))
 }
-}
 
-# compute DNA Stability Index function. Depends on GC content. A high GC content correlates with higher stability.
+
+
+# Function to compute DNA Stability Index
 compute_stability <- function(sequence) {
   sequence <- toupper(sequence)
   counts <- table(strsplit(sequence, "")[[1]])
@@ -34,7 +35,7 @@ compute_stability <- function(sequence) {
   return(stability_index)
 }
 
-# Function to estimate Z-DNA Probability. I have used 4 Z-dna motifs
+# Function to estimate Z-DNA Probability
 compute_z_dna_probability <- function(sequence) {
   sequence <- toupper(sequence)  # Convert to uppercase
 
